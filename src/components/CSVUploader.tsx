@@ -1,12 +1,10 @@
 import React, { useState, useRef } from 'react';
 import { X, Upload, AlertCircle, CheckCircle, ArrowRight } from 'lucide-react';
-import { SoundType } from '../hooks/useSound';
 import { Record } from '../types';
 import { getAllRecords } from '../utils/recordManager';
 
 interface CSVUploaderProps {
   onClose: () => void;
-  playSound: (type: SoundType) => void;
 }
 
 interface FieldMapping {
@@ -14,7 +12,7 @@ interface FieldMapping {
   appField: string;
 }
 
-const CSVUploader: React.FC<CSVUploaderProps> = ({ onClose, playSound }) => {
+const CSVUploader: React.FC<CSVUploaderProps> = ({ onClose }) => {
   const [isDragging, setIsDragging] = useState(false);
   const [csvHeaders, setCsvHeaders] = useState<string[]>([]);
   const [fieldMappings, setFieldMappings] = useState<FieldMapping[]>([]);
@@ -54,7 +52,6 @@ const CSVUploader: React.FC<CSVUploaderProps> = ({ onClose, playSound }) => {
 
     setCsvHeaders(headers);
     setStep('mapping');
-    playSound('keypress');
   };
 
   const handleDrop = async (e: React.DragEvent) => {
@@ -66,7 +63,6 @@ const CSVUploader: React.FC<CSVUploaderProps> = ({ onClose, playSound }) => {
       await processCSV(file);
     } else {
       setErrorMessage('Please upload a valid CSV file');
-      playSound('error');
     }
   };
 
@@ -89,7 +85,6 @@ const CSVUploader: React.FC<CSVUploaderProps> = ({ onClose, playSound }) => {
 
   const handleProcessData = () => {
     setStep('processing');
-    playSound('diskRead');
     
     // Simulate processing
     let processed = 0;
@@ -102,7 +97,6 @@ const CSVUploader: React.FC<CSVUploaderProps> = ({ onClose, playSound }) => {
       if (processed >= totalRows) {
         clearInterval(processInterval);
         setStep('complete');
-        playSound('login');
       }
     }, 50);
   };

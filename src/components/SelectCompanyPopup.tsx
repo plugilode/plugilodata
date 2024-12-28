@@ -1,49 +1,62 @@
 import React, { useState, useEffect } from 'react';
 import { X, Search, Building2, AlertTriangle } from 'lucide-react';
-import { Record } from '../types';
+import { CompanyRecord } from '../types';
 import { getAllRecords } from '../utils/recordManager';
 import { useSound } from '../hooks/useSound';
 
 interface SelectCompanyPopupProps {
   onClose: () => void;
-  onSelect: (company: Record) => void;
+  onSelect: (company: CompanyRecord) => void;
+}
+
+interface CompanyWithFlags extends CompanyRecord {
+  flagCount: number;
 }
 
 export const SelectCompanyPopup: React.FC<SelectCompanyPopupProps> = ({ onClose, onSelect }) => {
   const [searchTerm, setSearchTerm] = useState('');
-  const [companies, setCompanies] = useState<Record[]>([]);
+  const [companies, setCompanies] = useState<CompanyWithFlags[]>([]);
   const { playSound } = useSound();
 
   useEffect(() => {
-    const records = getAllRecords();
-    const companiesWithFlags = records.map(company => ({
-      ...company,
-      flagCount: Object.values(company.verificationStatus || {})
-        .filter(status => status.flagged).length
-    }));
-    
-    // Sort companies with flags first
-    companiesWithFlags.sort((a, b) => (b.flagCount || 0) - (a.flagCount || 0));
-    setCompanies(companiesWithFlags);
+    const fetchRecords = async () => {
+      const records = await getAllRecords();
+      const companiesWithFlags = records.map((company: CompanyRecord) => ({
+        ...company,
+        flagCount: Object.values(company.verificationStatus || {})
+          .filter((status: any) => status.flagged).length
+      }));
+      
+      // Sort companies with flags first
+      companiesWithFlags.sort((a: CompanyWithFlags, b: CompanyWithFlags) => (b.flagCount || 0) - (a.flagCount || 0));
+      setCompanies(companiesWithFlags);
+    };
+
+    fetchRecords();
   }, []);
 
-  const handleSearch = (term: string) => {
+  const handleSearch = async (term: string) => {
     setSearchTerm(term);
-    const filtered = getAllRecords().filter(company => 
+    const records = await getAllRecords();
+    const filtered = records.filter((company: CompanyRecord) => 
       company.name.toLowerCase().includes(term.toLowerCase()) ||
       company.id.toLowerCase().includes(term.toLowerCase())
-    );
+    ).map((company: CompanyRecord) => ({
+      ...company,
+      flagCount: Object.values(company.verificationStatus || {})
+        .filter((status: any) => status.flagged).length
+    }));
     setCompanies(filtered);
   };
 
-  const handleSelect = (company: Record) => {
+  const handleSelect = (company: CompanyRecord) => {
     playSound('keypress');
     onSelect(company);
   };
 
   return (
-    <div className="fixed inset-0 bg-black/90 backdrop-blur-sm z-50 flex items-center justify-center p-8">
-      <div className="relative w-full max-w-lg bg-black/80 border border-green-500/30 rounded-lg p-6">
+    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-8">
+      <div className="relative w-full h-full bg-black/50 border border-green-500/30 rounded-lg p-6">
         <button
           onClick={onClose}
           className="absolute top-4 right-4 text-red-500/70 hover:text-red-500 transition-colors"
@@ -68,9 +81,9 @@ export const SelectCompanyPopup: React.FC<SelectCompanyPopupProps> = ({ onClose,
         </div>
 
         <div className="max-h-96 overflow-y-auto space-y-2">
-          {companies.map(company => {
+          {companies.map((company: CompanyWithFlags) => {
             const flagCount = Object.values(company.verificationStatus || {})
-              .filter(status => status.flagged).length;
+              .filter((status: any) => status.flagged).length;
 
             return (
               <button

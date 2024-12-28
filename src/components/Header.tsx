@@ -1,13 +1,45 @@
 import React from 'react';
-import { Building2 } from 'lucide-react';
+import { Terminal, LogOut } from 'lucide-react';
+import PlugiloLogo from '../plugilo-logo.svg';
+import { User } from '../types';
 
-export const Header = () => (
-  <div className="text-center mb-8">
-    <div className="text-xs tracking-[0.3em] mb-2 animate-pulse">GLOBAL ENTERPRISE DATABASE</div>
-    <div className="text-xl font-mono tracking-wider flex items-center justify-center gap-2">
-      <img src="/plugilo-logo.svg" alt="Logo" className="h-6 w-auto" />
-      DATABASE SYSTEM
+interface HeaderProps {
+  user: User;
+  onLogout: () => void;
+}
+
+export const Header: React.FC<HeaderProps> = ({ user, onLogout }) => {
+  if (!user) {
+    return null;
+  }
+
+  return (
+    <div className="flex flex-col items-center justify-center p-6 border-b border-green-500/30">
+      <div className="w-full max-w-[320px] text-center mx-auto mb-4">
+        <img 
+          src={PlugiloLogo} 
+          alt="Plugilo" 
+          className="h-10 w-auto mx-auto"
+        />
+      </div>
+
+      <div className="flex items-center justify-between w-full border-t border-green-500/30 pt-4">
+        <div className="flex items-center gap-3 text-green-500/80">
+          <Terminal className="w-5 h-5" />
+          <span className="tracking-wider text-sm">TERMINAL v2.0</span>
+        </div>
+        <div className="flex items-center gap-4">
+          <div className="text-sm text-green-500/70 tracking-wide">
+            USER: {user.name} | ROLE: {user.role}
+          </div>
+          <button
+            onClick={onLogout}
+            className="text-red-500/70 hover:text-red-500 transition-colors"
+          >
+            <LogOut className="w-5 h-5" />
+          </button>
+        </div>
+      </div>
     </div>
-    <div className="text-sm font-mono mt-2 text-green-500/70">CORPORATE INTELLIGENCE NETWORK</div>
-  </div>
-);
+  );
+};

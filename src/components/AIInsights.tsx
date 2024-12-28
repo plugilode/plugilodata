@@ -14,24 +14,24 @@ export const AIInsights: React.FC<AIInsightsProps> = ({ company, allCompanies })
     findSimilarCompanies,
     analyzeMarketTrends,
     detectAnomalies,
-    analyzeCompetitiveLandscape
+    analyzeCompetitiveLandscape,
   } = useAI();
 
   const [insights, setInsights] = useState({
-    sentiment: { score: 0, label: 'neutral' as const },
+    sentiment: { score: 0, label: 'neutral' as string },
     similarCompanies: [] as Record[],
     marketTrends: {
       dominantCategories: [] as [string, number][],
       totalCompanies: 0,
-      categoryDistribution: {} as Record<string, number>
+      categoryDistribution: {} as { [key: string]: number },
     },
     anomalies: [] as string[],
     competitiveAnalysis: {
       marketPosition: '',
       strengths: [] as string[],
       weaknesses: [] as string[],
-      opportunities: [] as string[]
-    }
+      opportunities: [] as string[],
+    },
   });
 
   useEffect(() => {
@@ -39,9 +39,13 @@ export const AIInsights: React.FC<AIInsightsProps> = ({ company, allCompanies })
     const similarCompanies = findSimilarCompanies(company, allCompanies);
     const marketTrends = analyzeMarketTrends(allCompanies);
     const anomalies = detectAnomalies(company);
+
+    const competitorRecords = allCompanies.filter((c) =>
+      company.competitors?.includes(c.id)
+    );
     const competitiveAnalysis = analyzeCompetitiveLandscape(
       company,
-      company.competitors || []
+      competitorRecords
     );
 
     setInsights({
@@ -49,7 +53,7 @@ export const AIInsights: React.FC<AIInsightsProps> = ({ company, allCompanies })
       similarCompanies,
       marketTrends,
       anomalies,
-      competitiveAnalysis
+      competitiveAnalysis,
     });
   }, [company, allCompanies]);
 
@@ -63,17 +67,25 @@ export const AIInsights: React.FC<AIInsightsProps> = ({ company, allCompanies })
         </h3>
         <div className="grid grid-cols-2 gap-4">
           <div>
-            <div className="text-sm text-green-500/70 mb-2">Company Sentiment</div>
-            <div className={`text-xl ${
-              insights.sentiment.label === 'positive' ? 'text-green-500' :
-              insights.sentiment.label === 'negative' ? 'text-red-500' :
-              'text-yellow-500'
-            }`}>
+            <div className="text-sm text-green-500/70 mb-2">
+              Company Sentiment
+            </div>
+            <div
+              className={`text-xl ${
+                insights.sentiment.label === 'positive'
+                  ? 'text-green-500'
+                  : insights.sentiment.label === 'negative'
+                  ? 'text-red-500'
+                  : 'text-yellow-500'
+              }`}
+            >
               {insights.sentiment.label.toUpperCase()}
             </div>
           </div>
           <div>
-            <div className="text-sm text-green-500/70 mb-2">Confidence Score</div>
+            <div className="text-sm text-green-500/70 mb-2">
+              Confidence Score
+            </div>
             <div className="text-xl text-green-500">
               {Math.abs(insights.sentiment.score * 100).toFixed(1)}%
             </div>
@@ -89,16 +101,25 @@ export const AIInsights: React.FC<AIInsightsProps> = ({ company, allCompanies })
         </h3>
         <div className="space-y-4">
           <div>
-            <div className="text-sm text-green-500/70 mb-2">Dominant Categories</div>
-            {insights.marketTrends.dominantCategories.map(([category, count]) => (
-              <div key={category} className="flex justify-between items-center">
-                <span>{category}</span>
-                <span className="text-green-500">{count} companies</span>
-              </div>
-            ))}
+            <div className="text-sm text-green-500/70 mb-2">
+              Dominant Categories
+            </div>
+            {insights.marketTrends.dominantCategories.map(
+              ([category, count]) => (
+                <div
+                  key={category}
+                  className="flex justify-between items-center"
+                >
+                  <span>{category}</span>
+                  <span className="text-green-500">{count} companies</span>
+                </div>
+              )
+            )}
           </div>
           <div>
-            <div className="text-sm text-green-500/70 mb-2">Market Position</div>
+            <div className="text-sm text-green-500/70 mb-2">
+              Market Position
+            </div>
             <div className="text-green-500">
               {insights.competitiveAnalysis.marketPosition}
             </div>
@@ -130,10 +151,15 @@ export const AIInsights: React.FC<AIInsightsProps> = ({ company, allCompanies })
           Similar Companies
         </h3>
         <div className="space-y-2">
-          {insights.similarCompanies.map(similar => (
-            <div key={similar.id} className="flex justify-between items-center">
+          {insights.similarCompanies.map((similar: Record) => (
+            <div
+              key={similar.id}
+              className="flex justify-between items-center"
+            >
               <span>{similar.name}</span>
-              <span className="text-green-500/70">{similar.category[0]}</span>
+              <span className="text-green-500/70">
+                {similar.category[0]}
+              </span>
             </div>
           ))}
         </div>

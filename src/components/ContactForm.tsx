@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { X, Send, Mail, User, MessageSquare } from 'lucide-react';
 import { useSound } from '../hooks/useSound';
-import emailjs from '@emailjs/browser';
+import emailjs from 'emailjs-com';
 
 interface ContactFormProps {
   onClose: () => void;
