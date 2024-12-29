@@ -1,16 +1,12 @@
-# fly.toml app configuration file generated for beta-plug-masterda on 2024-12-19T20:30:24-06:00
+# fly.toml app configuration file generated for plugilodata on 2024-12-29T19:42:28Z
 #
 # See https://fly.io/docs/reference/configuration/ for information about how to use this file.
 #
 
-app = 'beta-plug-masterda'
-primary_region = 'qro'
+app = 'plugilodata'
+primary_region = 'fra'
 
 [build]
-
-[[mounts]]
-  source = 'data'
-  destination = '/data'
 
 [http_service]
   internal_port = 80
@@ -24,3 +20,4 @@ primary_region = 'qro'
   memory = '1gb'
   cpu_kind = 'shared'
   cpus = 1
+  memory_mb = 1024
