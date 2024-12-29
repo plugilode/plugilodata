@@ -1,0 +1,58 @@
+// MongoDB shell script
+db = db.getSiblingDB('test');
+
+// Print current database
+print("Current database:", db.getName());
+
+// Count existing documents
+print("Existing documents:", db.companies.count());
+
+// Clear existing companies if any
+db.companies.drop();
+print("Cleared existing companies collection");
+
+// Import companies
+load("src/data/companies/alphabet.json");
+db.companies.insertOne(JSON.parse(alphabet));
+
+load("src/data/companies/amazon.json");
+db.companies.insertOne(JSON.parse(amazon));
+
+load("src/data/companies/apple.json");
+db.companies.insertOne(JSON.parse(apple));
+
+load("src/data/companies/meta.json");
+db.companies.insertOne(JSON.parse(meta));
+
+load("src/data/companies/microsoft.json");
+db.companies.insertOne(JSON.parse(microsoft));
+
+load("src/data/companies/nemetschek.json");
+db.companies.insertOne(JSON.parse(nemetschek));
+
+load("src/data/companies/nvidia.json");
+db.companies.insertOne(JSON.parse(nvidia));
+
+load("src/data/companies/plugilo.json");
+db.companies.insertOne(JSON.parse(plugilo));
+
+load("src/data/companies/sap.json");
+db.companies.insertOne(JSON.parse(sap));
+
+load("src/data/companies/software-ag.json");
+db.companies.insertOne(JSON.parse(software_ag));
+
+load("src/data/companies/teamviewer.json");
+db.companies.insertOne(JSON.parse(teamviewer));
+
+load("src/data/companies/tesla.json");
+db.companies.insertOne(JSON.parse(tesla));
+
+load("src/data/companies/trump.json");
+db.companies.insertOne(JSON.parse(trump));
+
+// Verify import
+print("\nImported companies:");
+db.companies.find().forEach(printjson);
+
+print("\nTotal companies:", db.companies.count());
