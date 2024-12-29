@@ -9,18 +9,21 @@ primary_region = 'qro'
 [build]
 
 [[mounts]]
-  source = 'data'
-  destination = '/data'
+  source = "data"
+  destination = "/data"
 
 [http_service]
   internal_port = 80
   force_https = true
-  auto_stop_machines = 'stop'
+  auto_stop_machines = true # Boolean values don't need quotes
   auto_start_machines = true
   min_machines_running = 0
-  processes = ['app']
+  processes = ["app"]
 
-[[vm]]
-  memory = '1gb'
-  cpu_kind = 'shared'
+[processes]
+  app = "npm run dev:all" # This runs your custom script
+
+[resources] # Correct section for resources
+  memory = "1024" # Use megabytes for memory
+  cpu = "shared"
   cpus = 1
